@@ -1,0 +1,6 @@
+node_modules
+web-build
+.yarn
+dist
+keys
+build
