@@ -130,7 +130,7 @@ wss.on('connection', (ws) => {
   
   if(!keys.includes('index')) return
   if(!isInCli(parsed.index))
-    if(['help-me', 'nick', 'reset'].includes(parsed.do)) {
+    if(['help-me', 'nick', 'reset', 'check'].includes(parsed.do)) {
       clients[parsed.index] = {index: parsed.index, name:'', ws:ws, room: keys.includes('room') ? parsed.room : '', alive: true, id: maxId++, usePing: false, used: Date.now()}
       if(parsed.do === 'reset' && parsed.room !== '') {
         const found =  getCli().find(clnt => parsed.room === clnt.room && clnt.index && clnt.index !== parsed.index && clnt.ws.readyState === 1)
