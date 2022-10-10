@@ -263,8 +263,8 @@ wss.on('connection', (ws) => {
         break
 
         case 'help-me':
-          if(!keys.includes('to') || !isInCli(parsed.to) || clients[parsed.to].room !== clients[parsed.index].room){ sendPeers(); return } 
-          getCli().find(clnt => clients[parsed.index].room === clnt.room && parsed.index !== clnt.index && clnt.ws.readyState === 1)?.ws.send(JSON.stringify({do:'help-me', index: parsed.to, to: parsed.index}))
+          const found = getCli().find(clnt => clients[parsed.index].room === clnt.room && parsed.index !== clnt.index && clnt.ws.readyState === 1)
+          found?.ws.send(JSON.stringify({do:'help-me', index: (keys.includes('to') && isInCli(parsed.to) && clients[parsed.to].room === clients[parsed.index].room && clients[parsed.to].ws.readyState === 1) ? parsed.to : found.index, to: parsed.index}))
         break
 
         case 'help-sent':
