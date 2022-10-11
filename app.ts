@@ -190,6 +190,11 @@ wss.on('connection', (ws) => {
       ws.send(JSON.stringify({do: 'peers', peers: getCli().filter(client => client.room === '' && client.ws.readyState === 1 && client.name !== '').map((client => {return {name: client.name, index: client.index}}))}))
     break
 
+    case 'message':
+      if(keys.includes('text'))
+        getCli().filter(client => client.room === clients[parsed.index].room).forEach(cli => cli.ws.send(JSON.stringify({do:'message', text: parsed.text, from: parsed.index})))
+    break
+
     case 'play':
     if(keys.includes('play') && keys.includes('with')) {
       const room = randomBytes(8).toString('hex')
