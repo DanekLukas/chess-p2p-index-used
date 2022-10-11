@@ -6,7 +6,6 @@ import { randomBytes } from 'crypto'
 import dotenv from 'dotenv'
 import https from 'https'
 import http from 'http'
-import { parse } from 'path'
 
 dotenv.config()
 
@@ -191,8 +190,10 @@ wss.on('connection', (ws) => {
     break
 
     case 'message':
-      if(keys.includes('text'))
-        getCli().filter(client => client.room === clients[parsed.index].room).forEach(cli => cli.ws.send(JSON.stringify({do:'message', text: parsed.text, from: parsed.index})))
+      if(!keys.includes('text')) return
+      cleanClients()
+      const addresses = getCli().filter(client => client.room === clients[parsed.index].room && client.ws.readyState === 1);
+      addresses.forEach(cli => cli.ws.send(JSON.stringify({do:'message', text: parsed.text, from: parsed.index, count: addresses.length})))
     break
 
     case 'play':
@@ -265,6 +266,11 @@ wss.on('connection', (ws) => {
 
         case 'pong':
           clients[parsed.index].alive = true
+        break
+
+        case 'ping':
+          if(clients[parsed.index].ws !== ws) clients[parsed.index].ws = ws
+          clients[parsed.index].ws.send(JSON.stringify({do: 'pong', count: getCli().filter(client => client.room === clients[parsed.index].room && client.ws.readyState === 1).length}))
         break
 
         case 'help-me':
