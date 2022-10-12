@@ -145,8 +145,11 @@ wss.on('connection', (ws) => {
     if(clients[parsed.index].ws.readyState > 1)
       clients[parsed.index].ws = ws
     else {
-      if(clients[parsed.index].ws !== ws)
+      if(clients[parsed.index].ws !== ws) {
         ws.send(JSON.stringify(({do:'reset', room: clients[parsed.index].room})))
+        ws.close()
+        cleanClients()
+      }
     }
   switch(parsed.do) {
 
@@ -269,7 +272,6 @@ wss.on('connection', (ws) => {
         break
 
         case 'ping':
-          if(clients[parsed.index].ws !== ws) clients[parsed.index].ws = ws
           clients[parsed.index].ws.send(JSON.stringify({do: 'pong', count: getCli().filter(client => client.room === clients[parsed.index].room && client.ws.readyState === 1).length}))
         break
 
@@ -279,8 +281,8 @@ wss.on('connection', (ws) => {
         break
 
         case 'help-sent':
-          if(!keys.includes('to') || !keys.includes('start') || !keys.includes('board') || !keys.includes('lastMove') || !keys.includes('playing')) return
-          clients[parsed.to].ws.send(JSON.stringify({do:'help-sent', start: parsed.start, board: parsed.board, lastMove: parsed.lastMove, playing: parsed.playing}))
+          if(!keys.includes('to') || !keys.includes('board') || !keys.includes('lastMove') || !keys.includes('playing') || !keys.includes('time')) return
+          clients[parsed.to].ws.send(JSON.stringify({do:'help-sent', board: parsed.board, lastMove: parsed.lastMove, playing: parsed.playing, time: parsed.time}))
         break
       }
     }
