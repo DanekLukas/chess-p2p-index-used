@@ -77,7 +77,7 @@ const cleanClients = () => {
 
 const sendPeers = () => {
   const ready = getCli().filter(client => client.room === '' && client.name !== '' && client.ws.readyState === 1)
-  ready.forEach(item => item.ws.send(JSON.stringify ({do: 'peers', peers: ready.map(client => {return {name: client.name, index: client.index}})})))
+  ready.forEach(item => item.ws.send(JSON.stringify ({do: 'peers', peers: ready.map(client => {return {name: client.name, index: client.index}}), count: getCli().filter(itm => itm.room === '' && itm.ws.readyState === 1).length})))
   return Array.isArray(ready)
 }
 
@@ -189,7 +189,7 @@ wss.on('connection', (ws) => {
     break
 
     case 'check':
-      ws.send(JSON.stringify({do: 'peers', peers: getCli().filter(client => client.room === '' && client.ws.readyState === 1 && client.name !== '').map((client => {return {name: client.name, index: client.index}}))}))
+      ws.send(JSON.stringify({do: 'peers', peers: getCli().filter(client => client.room === '' && client.ws.readyState === 1 && client.name !== '').map((client => {return {name: client.name, index: client.index}})), count: getCli().filter(itm => itm.room === '' && itm.ws.readyState === 1).length}))
     break
 
     case 'message':
